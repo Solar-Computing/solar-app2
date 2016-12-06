@@ -2,6 +2,11 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+class Unit(db.Model):
+    table = db.Column(db.String(), primary_key=True)
+    field = db.Column(db.String(), primary_key=True)
+    unit = db.Column(db.String(), primary_key=True)
+
 class Simulation(db.Model):
     date = db.Column(db.DateTime(), primary_key=True) # datetime object
     globalSolar = db.Column(db.String())
