@@ -1,6 +1,8 @@
 # solar-app2
 New solar-app repo using python/flask
 
+Python Interpreter: Python3
+
 ## Installation
 
 ```
