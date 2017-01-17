@@ -1,8 +1,9 @@
 # solar-app2
 New solar-app repo using Python3/Flask
 
-## Create and Activate Python Virtual Environment
+## (Install) Create and Activate Python Virtual Environment
 ```bash
+pip install virtualenv
 virtualenv venv # create a python virtual environment
 source venv/bin/activate # activate the virtual environment
 ```
