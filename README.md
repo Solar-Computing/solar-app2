@@ -19,10 +19,22 @@ deactivate
 
 ## Installation and Setup
 
+Install dependencies.
 ```bash
 pip install -r requirements.txt
+```
+
+Create a database (with name `solar`) on a local postgres database.
+
+Configure your settings with secret and database credentials.
+```bash
 cp app/settings.py.example app/settings.py
-vim app/settings.py # edit the database urls and secrets for your env
+vim app/settings.py
+```
+
+Set up tables (with SQLAlchemy) and import data (TODO)
+```bash
+python manage.py createdb
 ```
 
 ## Running the app

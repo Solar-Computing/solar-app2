@@ -1,7 +1,11 @@
-import tempfile
-db_file = tempfile.NamedTemporaryFile()
+user = ''
+password = ''
+host = ''
+port = ''
+database = 'solar'
+
 url = 'postgresql://{}:{}@{}:{}/{}'
-url = url.format('warrior', 'dhruvmehra', 'localhost', '5432', 'solar')
+url = url.format(user, password, host, port, database)
 
 class Config(object):
     SECRET_KEY = 'REPLACE ME'
@@ -30,7 +34,7 @@ class TestConfig(Config):
     DEBUG = True
     DEBUG_TB_INTERCEPT_REDIRECTS = False
 
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + db_file.name
+    SQLALCHEMY_DATABASE_URI = url
     SQLALCHEMY_ECHO = True
 
     CACHE_TYPE = 'null'
