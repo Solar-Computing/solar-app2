@@ -1,5 +1,7 @@
 import tempfile
 db_file = tempfile.NamedTemporaryFile()
+url = 'postgresql://{}:{}@{}:{}/{}'
+url = url.format('warrior', 'dhruvmehra', 'localhost', '5432', 'solar')
 
 class Config(object):
     SECRET_KEY = 'REPLACE ME'
@@ -7,7 +9,7 @@ class Config(object):
 
 class ProdConfig(Config):
     ENV = 'prod'
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///../database.db'
+    SQLALCHEMY_DATABASE_URI = url
 
     CACHE_TYPE = 'simple'
 
@@ -17,7 +19,7 @@ class DevConfig(Config):
     DEBUG = True
     DEBUG_TB_INTERCEPT_REDIRECTS = False
 
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///../database.db'
+    SQLALCHEMY_DATABASE_URI = url
 
     CACHE_TYPE = 'null'
     ASSETS_DEBUG = True
