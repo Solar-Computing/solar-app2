@@ -23,10 +23,10 @@ $ deactivate                    # deactivate (or leave) the virtual environment
 `pip-tools` is a set of command line tools built around `pip` that install, manage, update, and synchronize Python packages.
 
 #### Installing `pip-tools`
-`pip-tools` can be installed globally as follows.
+Run the following inside the correct Python environment (typically a virtual environment).
 ```bash
-$ sudo pip install --upgrade pip     # ensure pip>=6.1
-$ sudo pip install pip-tools
+$ pip install --upgrade pip     # ensure pip>=6.1
+$ pip install pip-tools
 ```
 
 #### Compiling Dependencies
