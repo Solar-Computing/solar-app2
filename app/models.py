@@ -29,6 +29,15 @@ class Simulation(db.Model):
     ACOperatingCapacity = db.Column(db.Float())
     DCOperatingCapacity = db.Column(db.Float())
 
-    def getRange(start, end):
-        return Simulation.query.filter(Simulation.date >= start).\
+    def getRange(start, end, aggregate):
+        query = Simulation.query.filter(Simulation.date >= start).\
             filter(Simulation.date <= end)
+        if aggregate == 'hourly':
+            # do nothing
+        elif aggregate == 'daily':
+            # group by date
+        elif aggregate == 'monthly':
+            # group by month
+        else:
+            raise ValueError('invalid aggregation')
+        return query
