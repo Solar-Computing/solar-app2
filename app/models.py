@@ -8,10 +8,10 @@ class Unit(db.Model):
     unit = db.Column(db.String(), primary_key=True)
 
 class Simulation(db.Model):
-    date = db.Column(db.DateTime(), primary_key=True) # datetime object
+    timestamp = db.Column(db.DateTime(), primary_key=True) # datetime object
     globalSolar = db.Column(db.String())
-    PVPowerOutput = db.Column(db.Float())
-    ACPrimaryLoad = db.Column(db.Float())
+    PVPowerOutput = db.Column(db.Float()) # solar power produced kw
+    ACPrimaryLoad = db.Column(db.Float()) # total power consumed kw
     ACPrimaryLoadServed = db.Column(db.Float())
     gridPowerPrice = db.Column(db.Float())
     gridSellbackRate = db.Column(db.Float())
