@@ -1,14 +1,18 @@
 from flask import Blueprint, request, url_for, jsonify
-
+from app.models import Simulation
 api = Blueprint('api', __name__)
 
 @api.route('/')
 def home():
     return jsonify(hello='world')
 
-@api.route('/simulation')
+@api.route('/simulations', methods=['POST'])
 def getSimulation():
-    return jsonify(status='not implemented')
+    body = request.get_json()
+    start = body['start']
+    end = body['end']
+    results = Simulation.getRange(start, end).all()
+    return jsonify(contents=results, average="not implemented")
 
 @api.route('/dailyLoad')
 def getDaily():

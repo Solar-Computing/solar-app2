@@ -28,3 +28,7 @@ class Simulation(db.Model):
     DCRequiredOperatingCapacity = db.Column(db.Float())
     ACOperatingCapacity = db.Column(db.Float())
     DCOperatingCapacity = db.Column(db.Float())
+
+    def getRange(start, end):
+        return Simulation.query.filter(Simulation.date >= start).\
+            filter(Simulation.date <= end)
