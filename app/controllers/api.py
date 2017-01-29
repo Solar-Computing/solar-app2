@@ -11,6 +11,7 @@ def getSimulation():
     body = request.get_json()
     start = body['start']
     end = body['end']
+    aggregate = body['aggregate'] or 'hourly'
     results = db.session.execute(Simulation.getRange(start, end)).fetchall()
     return jsonify(contents=results, average="not implemented")
 
