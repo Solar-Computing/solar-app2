@@ -11,7 +11,7 @@ def getSimulation():
     body = request.get_json()
     start = body['start']
     end = body['end']
-    results = Simulation.getRange(start, end).all()
+    results = db.session.execute(Simulation.getRange(start, end)).fetchall()
     return jsonify(contents=results, average="not implemented")
 
 @api.route('/dailyLoad')
