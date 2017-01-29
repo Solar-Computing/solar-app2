@@ -50,4 +50,4 @@ class Simulation(db.Model):
             query = query.group_by(func.date_part('month', Simulation.timestamp))
         else:
             raise ValueError('invalid aggregation')
-        return query
+        return db.session.execute(query).fetchall()
