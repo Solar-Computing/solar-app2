@@ -30,7 +30,7 @@ class Simulation(db.Model):
     DCOperatingCapacity = db.Column(db.Float())
 
     def __init__(self, **kwargs):
-        for key, value in kwargs:
+        for key, value in kwargs.items():
             setattr(self, key, value)
 
     def getRange(start, end):
