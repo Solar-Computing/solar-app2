@@ -1,6 +1,10 @@
 import csv
 from app import models
 import inspect
+from sqlalchemy.orm import scoped_session, sessionmaker
+from app.settings import url
+from sqlalchemy import create_engine
+
 
 class Simulation():
     files = ["migration/2016-homeresults.csv"]
@@ -29,6 +33,9 @@ class Simulation():
     }
 
 def csv_to_table(migration_class, model_class):
+    engine = create_engine(url, convert_unicode=True)
+    db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
+
     for sim_name in migration_class.files:
         with open(sim_name, 'r') as f:
             # Skip the units row
@@ -42,8 +49,15 @@ def csv_to_table(migration_class, model_class):
                     filtered[col] = row[head]
 
                 s = models.Simulation(**filtered)
+                db_session.add(s)
+    
+    db_session.commit()
 
 
 
 def migrate_homeresults():
     csv_to_table(Simulation, models.Simulation)
+
+if __name__ == '__main__':
+    migrate_homeresults()
+    
