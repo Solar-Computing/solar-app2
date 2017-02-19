@@ -52,6 +52,15 @@ class Simulation(db.Model):
             raise ValueError('invalid aggregation')
         return [dict(r) for r in db.session.execute(query).fetchall()]
 
+    def getAverage(start, end):
+        query = db.select([
+                func.avg(Simulation.PVPowerOutput).label('PVPowerOutputAverage'),
+                func.avg(Simulation.ACPrimaryLoad).label('ACPrimaryLoadAverage')\
+            ])\
+            .where(Simulation.timestamp >= start)\
+            .where(Simulation.timestamp <= end)
+        return dict(db.session.execute(query).fetchone())
+
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)

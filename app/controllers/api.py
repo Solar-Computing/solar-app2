@@ -13,7 +13,8 @@ def getSimulation():
     end = body['end']
     aggregate = body['aggregate']
     results = Simulation.getRange(start, end, aggregate)
-    return jsonify(contents=results, average="not implemented")
+    average = Simulation.getAverage(start, end)
+    return jsonify(contents=results, average=average)
 
 @api.route('/dailyLoad')
 def getDaily():
