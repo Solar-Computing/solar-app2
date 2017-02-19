@@ -4,9 +4,9 @@ from sqlalchemy import func
 db = SQLAlchemy()
 
 class Unit(db.Model):
-    table = db.Column(db.String(), primary_key=True)
+    table = db.Column(db. String(), primary_key=True)
     field = db.Column(db.String(), primary_key=True)
-    unit = db.Column(db.String(), primary_key=True)
+    unit = db.Column(db.String())
 
 class Simulation(db.Model):
     timestamp = db.Column(db.DateTime(timezone=False), primary_key=True) # datetime object
@@ -51,3 +51,7 @@ class Simulation(db.Model):
         else:
             raise ValueError('invalid aggregation')
         return db.session.execute(query).fetchall()
+
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
