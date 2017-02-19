@@ -1,3 +1,6 @@
+# Vim swap file
+*.swp
+
 # Settings for our application
 app/settings.py
 
