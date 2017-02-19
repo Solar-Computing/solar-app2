@@ -32,9 +32,9 @@ class Simulation(db.Model):
 
     def getRange(start, end, aggregate):
         query = db.select([
-                func.max(Simulation.timestamp), 
-                func.sum(Simulation.PVPowerOutput),
-                func.sum(Simulation.ACPrimaryLoad)\
+                func.max(Simulation.timestamp).label('timestamp'), 
+                func.sum(Simulation.PVPowerOutput).label('PVPowerOutput'),
+                func.sum(Simulation.ACPrimaryLoad).label('ACPrimaryLoad')\
             ])\
             .where(Simulation.timestamp >= start)\
             .where(Simulation.timestamp <= end)\
@@ -50,7 +50,7 @@ class Simulation(db.Model):
             query = query.group_by(func.date_part('month', Simulation.timestamp))
         else:
             raise ValueError('invalid aggregation')
-        return db.session.execute(query).fetchall()
+        return [dict(r) for r in db.session.execute(query).fetchall()]
 
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
