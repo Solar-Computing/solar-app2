@@ -3,12 +3,12 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 class Unit(db.Model):
-    table = db.Column(db.String(), primary_key=True)
+    table = db.Column(db. String(), primary_key=True)
     field = db.Column(db.String(), primary_key=True)
-    unit = db.Column(db.String(), primary_key=True)
+    unit = db.Column(db.String())
 
 class Simulation(db.Model):
-    date = db.Column(db.DateTime(), primary_key=True) # datetime object
+    timestamp = db.Column(db.DateTime(), primary_key=True) # datetime object
     globalSolar = db.Column(db.String())
     PVPowerOutput = db.Column(db.Float())
     ACPrimaryLoad = db.Column(db.Float())
