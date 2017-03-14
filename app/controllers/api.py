@@ -1,10 +1,23 @@
 from flask import Blueprint, request, url_for, jsonify
 from app.models import Simulation
+from app.neurioclient import neurio_api
 api = Blueprint('api', __name__)
 
 @api.route('/')
 def home():
     return jsonify(hello='world')
+
+@api.route('/neurioHourly')
+def getNeurioHourly():
+    return jsonify(data=neurio_api.queryPastHour())
+
+@api.route('/neurioDaily')
+def getNeurioDaily():
+    return jsonify(data=neurio_api.queryPastDay())
+
+@api.route('/neurioMonthly')
+def getNeurioMonthly():
+    return jsonify(data=neurio_api.queryPastMonth())
 
 @api.route('/simulations', methods=['POST'])
 def getSimulation():
