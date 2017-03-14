@@ -9,15 +9,15 @@ def home():
 
 @api.route('/neurioHourly')
 def getNeurioHourly():
-    return jsonify(data=neurio_api.queryPastHour())
+    return jsonify(neurio_api.queryPastHour())
 
 @api.route('/neurioDaily')
 def getNeurioDaily():
-    return jsonify(data=neurio_api.queryPastDay())
+    return jsonify(neurio_api.queryPastDay())
 
 @api.route('/neurioMonthly')
 def getNeurioMonthly():
-    return jsonify(data=neurio_api.queryPastMonth())
+    return jsonify(neurio_api.queryPastMonth())
 
 @api.route('/simulations', methods=['POST'])
 def getSimulation():
