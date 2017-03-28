@@ -1,7 +1,7 @@
 from flask import Blueprint, request, url_for, jsonify
 from datetime import datetime
 
-from app.models import Simulation, Room, SmartSocket, PowerConsumption, db
+from app.models import Simulation, Home, Circuit, PowerConsumption, db
 from app.neurioclient import neurio_api
 api = Blueprint('api', __name__)
 
@@ -31,51 +31,51 @@ def getSimulation():
     average = Simulation.getAverage(start, end)
     return jsonify(contents=results, average=average)
 
-@api.route('/rooms', methods=['POST'])
-def addRoom():
+@api.route('/homes', methods=['POST'])
+def addHome():
     body = request.get_json()
     name = body['name']
-    new_room = Room(name=name)
-    db.session.add(new_room)
+    new_home = Home(name=name)
+    db.session.add(new_home)
     db.session.commit()
-    return jsonify(success=new_room.serialize())
+    return jsonify(success=new_home.serialize())
 
-@api.route('/rooms', methods=['GET'])
-def getRooms():
-    rooms = [r.serialize() for r in Room.query.all()]
-    return jsonify(rooms=rooms)
+@api.route('/homes', methods=['GET'])
+def getHomes():
+    homes = [r.serialize() for r in Home.query.all()]
+    return jsonify(homes=homes)
 
-@api.route('/rooms/<int:roomId>/sockets', methods=['GET'])
-def getSocketsByRoom(roomId):
-    return jsonify(sockets=Room.getSockets(roomId), roomId=roomId)
+@api.route('/homes/<int:homeId>/circuits', methods=['GET'])
+def getCircuitsByHome(homeId):
+    return jsonify(circuits=Home.getCircuits(homeId), homeId=homeId)
 
-@api.route('/sockets', methods=['POST'])
-def addSocket():
+@api.route('/circuits', methods=['POST'])
+def addCircuit():
     body = request.get_json()
     name = body['name']
-    roomId = body['roomId']
-    new_socket = SmartSocket(name=name, roomId=roomId)
-    db.session.add(new_socket)
+    homeId = body['homeId']
+    new_circuit = Circuit(name=name, homeId=homeId)
+    db.session.add(new_circuit)
     db.session.commit()
-    return jsonify(success=new_socket.serialize())
+    return jsonify(success=new_circuit.serialize())
 
-@api.route('/sockets', methods=['GET'])
-def getSockets():
-    sockets = [s.serialize() for s in SmartSocket.query.all()]
-    return jsonify(sockets=sockets)
+@api.route('/circuits', methods=['GET'])
+def getCircuits():
+    circuits = [s.serialize() for s in Circuit.query.all()]
+    return jsonify(circuits=circuits)
 
-@api.route('/sockets/<int:socketId>/logs', methods=['POST'])
-def logPower(socketId):
+@api.route('/circuits/<int:circuitId>/logs', methods=['POST'])
+def logPower(circuitId):
     timestamp = datetime.now()
     power = request.get_json()['power']
-    log_entry = PowerConsumption(timestamp=timestamp, socketId=socketId, power=power)
+    log_entry = PowerConsumption(timestamp=timestamp, circuitId=circuitId, power=power)
     db.session.add(log_entry)
     db.session.commit()
     return jsonify(success=log_entry.serialize())
 
-@api.route('/sockets/<int:socketId>/logs', methods=['GET'])
-def getPowerLogsBySocket(socketId):
-    return jsonify(logs=SmartSocket.getPowerLogs(socketId), socketId=socketId)
+@api.route('/circuits/<int:circuitId>/logs', methods=['GET'])
+def getPowerLogsByCircuit(circuitId):
+    return jsonify(logs=Circuit.getPowerLogs(circuitId), circuitId=circuitId)
 
 @api.route('/dailyLoad')
 def getDaily():
