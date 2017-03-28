@@ -2,7 +2,7 @@ import neurio
 import sys
 import pprint
 from datetime import datetime, timedelta
-import app.neurioclient.my_keys as my_keys
+import my_keys
 import time
 
 
@@ -27,36 +27,18 @@ args
   int number: the value of the time associated with the unit
 
 returns
-  datetime time interval to be parsed by the api call
-  int frequency associted with retrieving a single data point for the time interval
-
+  string of datetime timestamp to be parsed by the api call
 """
 def specifyTimeInterval(unit, number):
     interval = None
-    frequency = None
     if unit == "hours":
-        interval = getHourInterval(number)
-        frequency = number * 60
-        frequency -= frequency % 5
+        return (datetime.utcnow()-timedelta(hours=number)+timedelta(minutes=2)).replace(microsecond=0).isoformat()
     elif unit == "minutes":
-        interval = getMinuteInterval(number)
-        frequency = number - number%5
+        return (datetime.utcnow()-timedelta(minutes=number)).replace(microsecond=0).isoformat()
     elif unit == "seconds":
-        interval = getSecondInterval(number)
-        frequency = number - number%5
+        (datetime.utcnow()-timedelta(seconds=number)).replace(microsecond=0).isoformat()
     else:
-        raise ValueError('Invalid unit')
-    return interval, frequency
-
-
-def getMinuteInterval(minutes):
-    return (datetime.utcnow()-timedelta(minutes=minutes)).replace(microsecond=0).isoformat()
-
-def getHourInterval(hours):
-    return (datetime.utcnow()-timedelta(hours=hours)).replace(microsecond=0).isoformat()
-
-def getSecondInterval(seconds):
-    return (datetime.utcnow()-timedelta(seconds=seconds)).replace(microsecond=0).isoformat()
+        raise ValueError('Invalid unit specified for time interval query')
 
 
 # Functions to retrieve data from the neurio sensor ------------------------------------------------
@@ -67,8 +49,9 @@ def getSecondInterval(seconds):
   - an empty list if the neurio collected no data in the past hour
 """
 def queryPastHour():
-    timeinterval, frequency = specifyTimeInterval("hours", 1)
-    data = nc.get_samples(sensor_id=sensor_id, start=timeinterval,
+    timeinterval = specifyTimeInterval("hours", 1)
+    end = (datetime.utcnow()).replace(microsecond=0).isoformat()
+    data = nc.get_samples(sensor_id=sensor_id, start=timeinterval, end=end,
         granularity="hours", frequency=1)
     return data
 
@@ -79,8 +62,9 @@ def queryPastHour():
   - an empty list if the neurio collected no data in the past day
 """
 def queryPastDay():
-    timeinterval, frequency = specifyTimeInterval("hours", 24)
-    data = nc.get_samples(sensor_id=sensor_id, start=timeinterval,
+    timeinterval = specifyTimeInterval("hours", 24)
+    end = (datetime.utcnow()).replace(microsecond=0).isoformat()
+    data = nc.get_samples(sensor_id=sensor_id, start=timeinterval, end=end,
         granularity="hours", frequency=1)
     return data
 
@@ -91,8 +75,9 @@ def queryPastDay():
   - an empty list if the neurio collected no data in the past month
 """
 def queryPastMonth():
-    timeinterval, frequency = specifyTimeInterval("hours", 720)
-    data = nc.get_samples(sensor_id=sensor_id, start=timeinterval,
+    timeinterval = specifyTimeInterval("hours", 720)
+    end = (datetime.utcnow()).replace(microsecond=0).isoformat()
+    data = nc.get_samples(sensor_id=sensor_id, start=timeinterval, end=end,
         granularity="hours", frequency=1)
     return data
 
