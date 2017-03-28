@@ -32,7 +32,7 @@ class Simulation(db.Model):
 
     def getRange(start, end, aggregate):
         query = db.select([
-                func.max(Simulation.timestamp).label('timestamp'), 
+                func.max(Simulation.timestamp).label('timestamp'),
                 func.sum(Simulation.PVPowerOutput).label('PVPowerOutput'),
                 func.sum(Simulation.ACPrimaryLoad).label('ACPrimaryLoad')\
             ])\
@@ -64,3 +64,35 @@ class Simulation(db.Model):
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
+
+class Room(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(250), nullable=False)
+
+    def getSockets(roomId):
+        query = db.select([SmartSocket.id, SmartSocket.name])\
+            .where(SmartSocket.roomId == roomId)
+        return [dict(s) for s in db.session.execute(query).fetchall()]
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+        }
+
+class SmartSocket(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(250), nullable=False)
+    roomId = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'roomId': self.roomId,
+        }
+
+class PowerConsumption(db.Model):
+    timestamp = db.Column(db.DateTime(timezone=False), primary_key=True) # datetime object
+    socketId = db.Column(db.Integer, db.ForeignKey('smart_socket.id'), nullable=False, primary_key=True)
+    power = db.Column(db.Float(), nullable=False)

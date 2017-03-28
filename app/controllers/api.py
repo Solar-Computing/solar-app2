@@ -1,5 +1,5 @@
 from flask import Blueprint, request, url_for, jsonify
-from app.models import Simulation
+from app.models import Simulation, Room, SmartSocket, PowerConsumption, db
 from app.neurioclient import neurio_api
 api = Blueprint('api', __name__)
 
@@ -28,6 +28,39 @@ def getSimulation():
     results = Simulation.getRange(start, end, aggregate)
     average = Simulation.getAverage(start, end)
     return jsonify(contents=results, average=average)
+
+@api.route('/rooms/add', methods=['POST'])
+def addRoom():
+    body = request.get_json()
+    name = body['name']
+    new_room = Room(name=name)
+    db.session.add(new_room)
+    db.session.commit()
+    return jsonify(success=new_room.serialize())
+
+@api.route('/rooms', methods=['GET'])
+def getRooms():
+    rooms = [r.serialize() for r in Room.query.all()]
+    return jsonify(rooms=rooms)
+
+@api.route('/rooms/<int:roomId>', methods=['GET'])
+def getSocketsByRoom(roomId):
+    return Room.getSockets(roomId)
+
+@api.route('/sockets/add', methods=['POST'])
+def addSocket():
+    body = request.get_json()
+    name = body['name']
+    roomId = body['roomId']
+    new_socket = SmartSocket(name=name, roomId=roomId)
+    db.session.add(new_socket)
+    db.session.commit()
+    return jsonify(success=new_socket.serialize())
+
+@api.route('/sockets', methods=['GET'])
+def getSockets():
+    sockets = [s.serialize() for s in SmartSocket.query.all()]
+    return jsonify(sockets=sockets)
 
 @api.route('/dailyLoad')
 def getDaily():
