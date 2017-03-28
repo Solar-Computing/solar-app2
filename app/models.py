@@ -65,13 +65,13 @@ class Simulation(db.Model):
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-class Room(db.Model):
+class Home(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(250), nullable=False)
 
-    def getSockets(roomId):
+    def getSockets(homeId):
         query = db.select([SmartSocket.id, SmartSocket.name])\
-            .where(SmartSocket.roomId == roomId)
+            .where(SmartSocket.homeId == homeId)
         return [dict(s) for s in db.session.execute(query).fetchall()]
 
     def serialize(self):
@@ -80,31 +80,31 @@ class Room(db.Model):
             'name': self.name,
         }
 
-class SmartSocket(db.Model):
+class Circuit(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(250), nullable=False)
-    roomId = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
+    homeId = db.Column(db.Integer, db.ForeignKey('home.id'), nullable=False)
 
-    def getPowerLogs(socketId):
+    def getPowerLogs(circuitId):
         query = db.select([PowerConsumption.timestamp, PowerConsumption.power])\
-            .where(PowerConsumption.socketId == socketId)
+            .where(PowerConsumption.circuitId == circuitId)
         return [dict(l) for l in db.session.execute(query).fetchall()]
 
     def serialize(self):
         return {
             'id': self.id,
             'name': self.name,
-            'roomId': self.roomId,
+            'homeId': self.homeId,
         }
 
 class PowerConsumption(db.Model):
     timestamp = db.Column(db.DateTime(timezone=False), primary_key=True) # datetime object
-    socketId = db.Column(db.Integer, db.ForeignKey('smart_socket.id'), nullable=False, primary_key=True)
+    circuitId = db.Column(db.Integer, db.ForeignKey('circuit.id'), nullable=False, primary_key=True)
     power = db.Column(db.Float(), nullable=False)
 
     def serialize(self):
         return {
             'timestamp': self.timestamp,
-            'socketId': self.socketId,
+            'circuitId': self.circuitId,
             'power': self.power,
         }
