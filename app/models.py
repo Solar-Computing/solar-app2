@@ -85,6 +85,11 @@ class SmartSocket(db.Model):
     name = db.Column(db.String(250), nullable=False)
     roomId = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
 
+    def getPowerLogs(socketId):
+        query = db.select([PowerConsumption.timestamp, PowerConsumption.power])\
+            .where(PowerConsumption.socketId == socketId)
+        return [dict(l) for l in db.session.execute(query).fetchall()]
+
     def serialize(self):
         return {
             'id': self.id,
@@ -96,3 +101,10 @@ class PowerConsumption(db.Model):
     timestamp = db.Column(db.DateTime(timezone=False), primary_key=True) # datetime object
     socketId = db.Column(db.Integer, db.ForeignKey('smart_socket.id'), nullable=False, primary_key=True)
     power = db.Column(db.Float(), nullable=False)
+
+    def serialize(self):
+        return {
+            'timestamp': self.timestamp,
+            'socketId': self.socketId,
+            'power': self.power,
+        }
