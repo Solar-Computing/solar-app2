@@ -3,11 +3,16 @@ from datetime import datetime
 
 from app.models import Simulation, Home, Circuit, PowerConsumption, db
 from app.neurioclient import neurio_api
+from app.controllers import feedgenerator
 api = Blueprint('api', __name__)
 
 @api.route('/')
 def home():
     return jsonify(hello='world')
+
+@api.route('/feedData')
+def feedPopulationData():
+    return jsonify(feedgenerator.getFeedData())
 
 @api.route('/neurioHourly')
 def getNeurioHourly():
