@@ -1,6 +1,8 @@
 from app.neurioclient import neurio_api
+from enum import Enum
 from flask import jsonify
 from datetime import datetime
+import pyowm
 
 
 ''' 
@@ -12,13 +14,19 @@ from datetime import datetime
     'light-bulb'
     'announcement'
 '''
+#format the data to be displayed on the API
+def formatData(message, category=None, timestamp=None):
+    if category not in ['logo', 'goal', 'trophy', 'target', 'light-bulb', 'announcement']: category = 'light-bulb'
+    if not timestamp: timestamp = datetime.now().strftime("%b %-d %-I%p ET")
+    return {"message" : message, "category" : category, "timestamp" : timestamp}
+
 
 #main function to retrieve dictionaries of messages / logos / notification timestamps
 def getFeedData():
     feedlist = []
-    if getPeakForDailyData(): feedlist.append({"message" : getPeakForDailyData(), "logo" : 'light-bulb.png', "timestamp" : datetime.now().strftime("%b %-d %-I%p ET")})
-    if getDailyComparisonToPastMonth(): feedlist.append({"message" : getWeatherNotification, "logo" : "target.png", "timestamp" : datetime.now().strftime("%b %-d %-I%p ET")})
-    if getWeatherNotification(): feedlist.append({"message" : getWeatherNotification, "logo" : "sun.png", "timestamp" : datetime.now().strftime("%b %-d %-I%p ET")})
+    if getPeakForDailyData(): feedlist.append(formatData(getPeakForDailyData(), 'light-bulb'))
+    if getDailyComparisonToPastMonth(): feedlist.append(formatData(getDailyComparisonToPastMonth(), 'target'))
+    feedlist.append(formatData(getWeatherNotification(), 'logo'))
     return feedlist
 
 
@@ -40,4 +48,19 @@ def getDailyComparisonToPastMonth():
 
 #def retrieve a message giving advice based on the current weather
 def getWeatherNotification():
-    return "It will be very sunny today, so make sure to close your blinds to block out heat!"
+    try:
+        owm = pyowm.OWM('983cd71369086bf29f5f16b8438bf9fd')
+        weather = owm.weather_at_place("Atlanta, US").get_weather()
+        temperatures = weather.get_temperature('fahrenheit')
+
+        #determine qualifier and write notification based on that
+        if temperatures['temp_max'] > 70:
+            if weather.get_clouds() < 30:
+                return "It will be very sunny today, with a max temp of {} degrees F. Make sure to close your blinds to block out the heat!".format(temperatures['temp_max'])
+            return "It will ve very hot today, with a max temp of {} degrees F".format(temperatures['temp_max'])
+        elif temperatures['temp_min'] < 40:
+            return "It will very very cold today, with a min temp of {} degrees F, so you probably won't need the AC today. Stay warm!".format(temperatures['temp_min'])
+        return "It is currently {} degrees F and {}.".format(weather.get_status)
+    
+    except:
+        return "We couldn't fetch the weather data right now, sorry.. check the weather online."
