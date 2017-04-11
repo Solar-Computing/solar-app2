@@ -25,17 +25,15 @@ def formatData(n_type, message, category=None, timestamp=None):
 #turn notification timestamps into strings to be displayed as json objects
 def getFeedData():
 
-    #call functions to generate new feed data where applicable
-
-    #if dailyPeak now at a new high, post new message
+    #TODO if dailyPeak now at a new high, post new message 
     if not notificationcache.notificationInLastInterval("dailyPeak", timedelta(minutes=2)):
         notificationcache.addNotification(formatData("dailyPeak", getPeakForDailyData()))
 
-    #if weather hasn't had notification in past 2 hours, post another one
+    #TODO if weather hasn't had notification in past 2 hours, post another one
     if not notificationcache.notificationInLastInterval("weather", timedelta(minutes=1)):
         notificationcache.addNotification(formatData("weather", getWeatherNotification()))
 
-    #post average daily
+    #TODO post average daily
     if not notificationcache.notificationInLastInterval("dailyCompToMonth", timedelta(minutes=4)):
         notificationcache.addNotification(formatData("dailyCompToMonth", getDailyComparisonToPastMonth()))
 
@@ -66,7 +64,7 @@ def getDailyComparisonToPastMonth():
     average_today = sum(samples_today) / len(samples_today)
 
     #message logic
-    if abs(average_month - average_today) < 100: return "Your consumptions is right on par with the average today."
+    if abs(average_month - average_today) < 100: return "Your consumptions is right on par with the monthly average today."
     elif average_today < average_month: return "Good work! Your consumption is {}%  below the average for the month!".format( round((average_month-average_today)/average_month, 1) )
     else: return "Hey.. your consumption is higher today than the average for this month by {}%. Make sure to turn off anything you're not using.".format( round((average_today-average_month)/average_month, 1) ) 
 
