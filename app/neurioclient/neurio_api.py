@@ -2,21 +2,17 @@ import neurio
 import sys
 import pprint
 from datetime import datetime, timedelta
-import my_keys
+import app.neurioclient.my_keys as my_keys
 import time
 
 
 # Setup authentication & create client that can authenticate itself -------------------------------
-try:
-  tp = neurio.TokenProvider(key=my_keys.key, secret=my_keys.secret)
-  nc = neurio.Client(token_provider=tp)
+tp = neurio.TokenProvider(key=my_keys.key, secret=my_keys.secret)
+nc = neurio.Client(token_provider=tp)
 
-  # Retrieve sensor ID and location ID --------------------------------------------------------------
-  sensor_id = nc.get_user_information()["locations"][0]["sensors"][0]["sensorId"]
-  location_id = nc.get_user_information()["locations"][0]["id"]
-
-except:
-  print("error authenticating with server")
+# Retrieve sensor ID and location ID --------------------------------------------------------------
+sensor_id = nc.get_user_information()["locations"][0]["sensors"][0]["sensorId"]
+location_id = nc.get_user_information()["locations"][0]["id"]
 
 
 # Functions for specifying the time interval -------------------------------------------------------
