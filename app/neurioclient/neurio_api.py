@@ -1,3 +1,4 @@
+from __future__ import division
 from datetime import datetime, timedelta
 import app.neurioclient.my_keys as my_keys
 import neurio
@@ -77,5 +78,49 @@ def queryPastMonth():
     data = nc.get_samples(sensor_id=sensor_id, start=timeinterval, end=end,
         granularity="hours", frequency=2, per_page=500)
     return data
+
+
+"""
+  inputs: 
+  - start in the format returned by javascript's toUTCString() function
+  - end in the format returned by javascript's toUTCString() function
+
+  this function will return:
+  - list of the data points for each hour of data collected in the specified interval
+"""
+def queryInterval(start, end, aggregate):
+    #parse aggregate
+    aggregator = "hours"
+    if aggregate == "daily": aggregator = "days"
+    elif aggregate == "monthly": aggregator = "months"
+
+    #retrieve data
+    start = datetime.strptime(start, "%a, %d %b %Y %X GMT").isoformat()
+    end = datetime.strptime(end, "%a, %d %b %Y %X GMT").isoformat()
+    data = nc.get_samples(sensor_id=sensor_id, start=start, end=end,
+        granularity=aggregator, frequency=1, per_page=500)
+    return data
+
+
+'''
+  return the average for a set of samples
+'''
+def findIntervalAverage(samples):
+    data = [int(sample["consumptionPower"]) for sample in samples]
+    return sum(data) / len(data)
+
+
+'''
+  change format of the samples to how the front end parses the data
+  currently no PV power output, so that value is changed to zero -- should be changed dynamically once there is information
+'''
+def convertSamplesToSimulationFormat(samples):
+    newsamples = [{"ACPrimaryLoad":sample["consumptionPower"], "PVPowerOutput": 0, "timestamp":datetime.strptime(sample["timestamp"], "%Y-%m-%dT%X.000Z").strftime("%a, %d %b %Y %X GMT")} for sample in samples]
+    return newsamples
+
+
+
+
+
 
 

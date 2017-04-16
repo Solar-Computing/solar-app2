@@ -14,6 +14,17 @@ def home():
 def feedPopulationData():
     return jsonify(feedgenerator.getFeedData())
 
+@api.route('/neurioData', methods=['POST'])
+def getNeurioData():
+    body = request.get_json()
+    start = body['start']
+    end = body['end']
+    aggregate = body['aggregate']
+    samples = neurio_api.queryInterval(start, end, aggregate)
+    contents = neurio_api.convertSamplesToSimulationFormat(samples)
+    average = neurio_api.findIntervalAverage(samples)
+    return jsonify(contents=contents, average=average)
+
 @api.route('/neurioHourly')
 def getNeurioHourly():
     return jsonify(neurio_api.queryPastHour())
