@@ -1,9 +1,9 @@
-import neurio
-import sys
-import pprint
 from datetime import datetime, timedelta
 import app.neurioclient.my_keys as my_keys
+import neurio
+import pprint
 import time
+import sys
 
 
 # Setup authentication & create client that can authenticate itself -------------------------------
@@ -13,6 +13,7 @@ nc = neurio.Client(token_provider=tp)
 # Retrieve sensor ID and location ID --------------------------------------------------------------
 sensor_id = nc.get_user_information()["locations"][0]["sensors"][0]["sensorId"]
 location_id = nc.get_user_information()["locations"][0]["id"]
+
 
 
 # Functions for specifying the time interval -------------------------------------------------------
@@ -61,7 +62,7 @@ def queryPastDay():
     timeinterval = specifyTimeInterval("hours", 24)
     end = (datetime.utcnow()).replace(microsecond=0).isoformat()
     data = nc.get_samples(sensor_id=sensor_id, start=timeinterval, end=end,
-        granularity="hours", frequency=1)
+        granularity="hours", frequency=1, per_page=500)
     return data
 
 
@@ -74,7 +75,7 @@ def queryPastMonth():
     timeinterval = specifyTimeInterval("hours", 720)
     end = (datetime.utcnow()).replace(microsecond=0).isoformat()
     data = nc.get_samples(sensor_id=sensor_id, start=timeinterval, end=end,
-        granularity="hours", frequency=1)
+        granularity="hours", frequency=2, per_page=500)
     return data
 
 
