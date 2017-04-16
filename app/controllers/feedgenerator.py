@@ -26,15 +26,15 @@ def formatData(n_type, message, category=None, timestamp=None):
 def getFeedData():
 
     #TODO if dailyPeak now at a new high, post new message 
-    if not notificationcache.notificationInLastInterval("dailyPeak", timedelta(minutes=2)):
+    if not notificationcache.notificationInLastInterval("dailyPeak", timedelta(days=1)):
         notificationcache.addNotification(formatData("dailyPeak", getPeakForDailyData()))
 
     #TODO if weather hasn't had notification in past 2 hours, post another one
-    if not notificationcache.notificationInLastInterval("weather", timedelta(minutes=1)):
+    if not notificationcache.notificationInLastInterval("weather", timedelta(hours=3)):
         notificationcache.addNotification(formatData("weather", getWeatherNotification()))
 
     #TODO post average daily
-    if not notificationcache.notificationInLastInterval("dailyCompToMonth", timedelta(minutes=4)):
+    if not notificationcache.notificationInLastInterval("dailyCompToMonth", timedelta(minutes=30)):
         notificationcache.addNotification(formatData("dailyCompToMonth", getDailyComparisonToPastMonth()))
 
     return notificationcache.getNotifications()
