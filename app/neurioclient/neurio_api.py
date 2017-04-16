@@ -107,7 +107,7 @@ def queryInterval(start, end, aggregate):
 '''
 def findIntervalAverage(samples):
     data = [int(sample["consumptionPower"]) for sample in samples]
-    return sum(data) / len(data)
+    return ["ACPrimaryLoad":sum(data)/len(data), "PVPowerOutput":0]
 
 
 '''
