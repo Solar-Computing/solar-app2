@@ -47,11 +47,14 @@ def specifyTimeInterval(unit, number):
   - an empty list if the neurio collected no data in the past hour
 """
 def queryPastHour():
-    timeinterval = specifyTimeInterval("hours", 1)
-    end = (datetime.utcnow()).replace(microsecond=0).isoformat()
-    data = nc.get_samples(sensor_id=sensor_id, start=timeinterval, end=end,
-        granularity="hours", frequency=1)
-    return data
+    try:
+        timeinterval = specifyTimeInterval("hours", 1)
+        end = (datetime.utcnow()).replace(microsecond=0).isoformat()
+        data = nc.get_samples(sensor_id=sensor_id, start=timeinterval, end=end,
+          granularity="hours", frequency=1)
+        return data
+    except:
+        return []
 
 
 """
@@ -60,12 +63,14 @@ def queryPastHour():
   - an empty list if the neurio collected no data in the past day
 """
 def queryPastDay():
-    timeinterval = specifyTimeInterval("hours", 24)
-    end = (datetime.utcnow()).replace(microsecond=0).isoformat()
-    data = nc.get_samples(sensor_id=sensor_id, start=timeinterval, end=end,
-        granularity="hours", frequency=1, per_page=500)
-    return data
-
+    try:
+        timeinterval = specifyTimeInterval("hours", 24)
+        end = (datetime.utcnow()).replace(microsecond=0).isoformat()
+        data = nc.get_samples(sensor_id=sensor_id, start=timeinterval, end=end,
+            granularity="hours", frequency=1, per_page=500)
+        return data
+    except:
+        return []
 
 """
   this function will return:
@@ -73,11 +78,14 @@ def queryPastDay():
   - an empty list if the neurio collected no data in the past month
 """
 def queryPastMonth():
-    timeinterval = specifyTimeInterval("hours", 720)
-    end = (datetime.utcnow()).replace(microsecond=0).isoformat()
-    data = nc.get_samples(sensor_id=sensor_id, start=timeinterval, end=end,
-        granularity="hours", frequency=2, per_page=500)
-    return data
+    try:
+        timeinterval = specifyTimeInterval("hours", 720)
+        end = (datetime.utcnow()).replace(microsecond=0).isoformat()
+        data = nc.get_samples(sensor_id=sensor_id, start=timeinterval, end=end,
+            granularity="hours", frequency=2, per_page=500)
+        return data
+    except:
+        return []
 
 
 """
@@ -95,11 +103,14 @@ def queryInterval(start, end, aggregate):
     elif aggregate == "monthly": aggregator = "months"
 
     #retrieve data
-    start = datetime.strptime(start, "%a, %d %b %Y %X GMT").isoformat()
-    end = datetime.strptime(end, "%a, %d %b %Y %X GMT").isoformat()
-    data = nc.get_samples(sensor_id=sensor_id, start=start, end=end,
-        granularity=aggregator, frequency=1, per_page=500)
-    return data
+    try:
+        start = datetime.strptime(start, "%a, %d %b %Y %X GMT").isoformat()
+        end = datetime.strptime(end, "%a, %d %b %Y %X GMT").isoformat()
+        data = nc.get_samples(sensor_id=sensor_id, start=start, end=end,
+            granularity=aggregator, frequency=1, per_page=500)
+        return data
+    except:
+        return []
 
 
 '''
