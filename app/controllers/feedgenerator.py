@@ -18,7 +18,7 @@ import pyowm
 #format the data to be displayed on the API
 def formatData(n_type, message, category=None, timestamp=None):
     if category not in ['Notification', 'Warning', 'Congratulations', 'Idea', 'Weather Update']: category = 'Notification'
-    if not timestamp: timestamp = datetime.now() #.strftime("%b %-d %-I%p ET")
+    if not timestamp: timestamp = datetime.now() #.strftime("%b %-d %H:%M EDT")
     return {"type" : n_type, "message" : message, "category" : category, "timestamp" : timestamp}
 
 
@@ -60,12 +60,13 @@ def getFeedData():
 #retrieve a message describing the peak for the day
 def getPeakForDailyData():
     data = neurio_api.queryPastDay()
-    if data:
+    if not data: return "Your neurio data couldn't be retrieved right now. Make sure to check your wifi connection."
+    try:
         peak = max(data, key=lambda sample : sample["consumptionEnergy"])
         #time format: YYYY-MM-DDTHH:MM
-        #return "Your peak energy consumption today was at " + ( datetime.strptime(peak["timestamp"][:16], "%Y-%m-%dT%H:%M") - timedelta(datetime.utcnow() + datetime.now()) ).strftime("%-I%p UTC")
-        return "Your peak energy consumption today was at {}.".format(datetime.strptime(peak["timestamp"][:16], "%Y-%m-%dT%H:%M").strftime("%-I%p UTC"))
-    return "Your neurio data couldn't be retrieved right now. Make sure to check your wifi connection."
+        return "Your peak energy consumption today was at {}.".format((datetime.strptime(peak["timestamp"][:16], "%Y-%m-%dT%H:%M") - timedelta(hours=4)).strftime("%-I%p EDT"))
+    except:
+        return "Your neurio data couldn't be retrieved right now. Make sure to check your wifi connection."
 
 
 #retrieve a message describing the daily consumption as compared to the monthly consumption

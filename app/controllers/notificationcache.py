@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+
 notifications = []
 
 def getNotifications():
