@@ -1,8 +1,8 @@
 import app.controllers.notificationcache as notificationcache
-from app.neurioclient import neurio_api
-from enum import Enum
-from flask import jsonify
 from datetime import datetime, timedelta
+from app.neurioclient import neurio_api
+from flask import jsonify
+from enum import Enum
 import pyowm
 
 
@@ -17,25 +17,39 @@ import pyowm
 '''
 #format the data to be displayed on the API
 def formatData(n_type, message, category=None, timestamp=None):
-    if category not in ['logo', 'goal', 'trophy', 'target', 'light-bulb', 'announcement']: category = 'light-bulb'
+    if category not in ['Notification', 'Warning', 'Congratulations', 'Idea', 'Weather Update']: category = 'Notification'
     if not timestamp: timestamp = datetime.now() #.strftime("%b %-d %-I%p ET")
     return {"type" : n_type, "message" : message, "category" : category, "timestamp" : timestamp}
+
 
 #main function to retrieve dictionaries of messages / categories / notification timestamps
 #turn notification timestamps into strings to be displayed as json objects
 def getFeedData():
 
+    # ------- notifications based on dynamically retrieved data --------
+
     #TODO if dailyPeak now at a new high, post new message 
     if not notificationcache.notificationInLastInterval("dailyPeak", timedelta(days=1)):
-        notificationcache.addNotification(formatData("dailyPeak", getPeakForDailyData()))
+        notificationcache.addNotification(formatData("dailyPeak", getPeakForDailyData(), category="Notification"))
 
     #TODO if weather hasn't had notification in past 2 hours, post another one
     if not notificationcache.notificationInLastInterval("weather", timedelta(hours=3)):
-        notificationcache.addNotification(formatData("weather", getWeatherNotification()))
+        notificationcache.addNotification(formatData("weather", getWeatherNotification(), category="Weather Update"))
 
     #TODO post average daily
     if not notificationcache.notificationInLastInterval("dailyCompToMonth", timedelta(minutes=30)):
-        notificationcache.addNotification(formatData("dailyCompToMonth", getDailyComparisonToPastMonth()))
+        notificationcache.addNotification(formatData("dailyCompToMonth", getDailyComparisonToPastMonth(), category="Warning"))
+
+    # ------- static data for functionality not yet implemented -------
+
+    if not notificationcache.notificationInLastInterval("water", timedelta(days=3)):
+        notificationcache.addNotification(formatData("water", "At your current rate, you're using 12 percent less water than last week.. nice!", category="Congratulations"))
+
+    if not notificationcache.notificationInLastInterval("energy_goal", timedelta(days=7)):
+        notificationcache.addNotification(formatData("energy_goal", "Congrats! You reached your energy goal last week -- keep it up!", category="Congratulations"))
+
+    if not notificationcache.notificationInLastInterval("light_on_warning", timedelta(days=4)):
+        notificationcache.addNotification(formatData("light_on_warning", "Looks like you left a light on all night yesterday. Make sure you turn off all your lights once you're done using them.", category="Warning"))
 
     return notificationcache.getNotifications()
 
@@ -51,17 +65,20 @@ def getPeakForDailyData():
         #time format: YYYY-MM-DDTHH:MM
         #return "Your peak energy consumption today was at " + ( datetime.strptime(peak["timestamp"][:16], "%Y-%m-%dT%H:%M") - timedelta(datetime.utcnow() + datetime.now()) ).strftime("%-I%p UTC")
         return "Your peak energy consumption today was at {}.".format(datetime.strptime(peak["timestamp"][:16], "%Y-%m-%dT%H:%M").strftime("%-I%p UTC"))
-    return "dailyPeak", "No data found for today. Make sure to check your wifi connection."
+    return "Your neurio data couldn't be retrieved right now. Make sure to check your wifi connection."
 
 
 #retrieve a message describing the daily consumption as compared to the monthly consumption
 def getDailyComparisonToPastMonth():
 
     #data retrieval
-    samples_month = [sample['consumptionEnergy'] for sample in neurio_api.queryPastMonth()]
-    average_month = sum(samples_month) / len(samples_month)
-    samples_today = [sample['consumptionEnergy'] for sample in neurio_api.queryPastDay()]
-    average_today = sum(samples_today) / len(samples_today)
+    try:
+        samples_month = [sample['consumptionEnergy'] for sample in neurio_api.queryPastMonth()]
+        average_month = sum(samples_month) / len(samples_month)
+        samples_today = [sample['consumptionEnergy'] for sample in neurio_api.queryPastDay()]
+        average_today = sum(samples_today) / len(samples_today)
+    except:
+        return None
 
     #message logic
     if abs(average_month - average_today) < 100: return "Your consumptions is right on par with the monthly average today."

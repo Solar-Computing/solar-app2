@@ -9,7 +9,8 @@ def clearNotifications():
     notifications = []
 
 def addNotification(notification):
-    notifications.append(notification)
+    if notification["message"]:
+        notifications.append(notification)
 
 
 

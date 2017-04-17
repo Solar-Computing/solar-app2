@@ -12,8 +12,11 @@ tp = neurio.TokenProvider(key=my_keys.key, secret=my_keys.secret)
 nc = neurio.Client(token_provider=tp)
 
 # Retrieve sensor ID and location ID --------------------------------------------------------------
-sensor_id = nc.get_user_information()["locations"][0]["sensors"][0]["sensorId"]
-location_id = nc.get_user_information()["locations"][0]["id"]
+try:
+  sensor_id = nc.get_user_information()["locations"][0]["sensors"][0]["sensorId"]
+  location_id = nc.get_user_information()["locations"][0]["id"]
+except Exception as e:
+  print(e)
 
 
 
@@ -117,8 +120,11 @@ def queryInterval(start, end, aggregate):
   return the average for a set of samples
 '''
 def findIntervalAverage(samples):
-    data = [int(sample["consumptionPower"]) for sample in samples]
-    return {"ACPrimaryLoad":sum(data)/len(data), "PVPowerOutput":0}
+    try:
+        data = [int(sample["consumptionPower"]) for sample in samples]
+        return {"ACPrimaryLoad":sum(data)/len(data), "PVPowerOutput":0}
+    except:
+        return {"ACPrimaryLoad":0, "PVPowerOutput":0}
 
 
 '''
