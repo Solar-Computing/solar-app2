@@ -33,11 +33,11 @@ def getFeedData():
         notificationcache.addNotification(formatData("dailyPeak", getPeakForDailyData(), category="Notification"))
 
     #TODO if weather hasn't had notification in past 2 hours, post another one
-    if not notificationcache.notificationInLastInterval("weather", timedelta(hours=3)):
+    if not notificationcache.notificationInLastInterval("weather", timedelta(hours=5)):
         notificationcache.addNotification(formatData("weather", getWeatherNotification(), category="Weather Update"))
 
     #TODO post average daily
-    if not notificationcache.notificationInLastInterval("dailyCompToMonth", timedelta(minutes=30)):
+    if not notificationcache.notificationInLastInterval("dailyCompToMonth", timedelta(days=1)):
         notificationcache.addNotification(formatData("dailyCompToMonth", getDailyComparisonToPastMonth(), category="Warning"))
 
     # ------- static data for functionality not yet implemented -------
@@ -64,7 +64,7 @@ def getPeakForDailyData():
     try:
         peak = max(data, key=lambda sample : sample["consumptionEnergy"])
         #time format: YYYY-MM-DDTHH:MM
-        return "Your peak energy consumption today was at {}.".format((datetime.strptime(peak["timestamp"][:16], "%Y-%m-%dT%H:%M") - timedelta(hours=4)).strftime("%-I%p EDT"))
+        return "Your peak energy consumption in the past 24 hours was at {}.".format((datetime.strptime(peak["timestamp"][:16], "%Y-%m-%dT%H:%M") - timedelta(hours=4)).strftime("%-I%p EDT"))
     except:
         return "Your neurio data couldn't be retrieved right now. Make sure to check your wifi connection."
 
@@ -98,10 +98,10 @@ def getWeatherNotification():
         #notification logic based on weather qualifiers
         if temperatures['temp_max'] > 70:
             if weather.get_clouds() < 30:
-                return "It will be very sunny today, with a max temp of {} degrees F. Make sure to close your blinds to block out the heat!".format(temperatures['temp_max'])
-            return "It will ve very hot today, with a max temp of {} degrees F".format(temperatures['temp_max'])
+                return "The weather looks very sunny, with a max temp of {} degrees F. Make sure to close your blinds to block out the heat!".format(temperatures['temp_max'])
+            return "It's pretty hot outside, with a max temp of {} degrees F".format(temperatures['temp_max'])
         elif temperatures['temp_min'] < 40:
-            return "It will very cold today or tonight, with a min temp of {} degrees F, so you probably won't need the AC today. Stay warm!".format(temperatures['temp_min'])
+            return "It's pretty cold outside, with a min temp of {} degrees F, so you probably won't need the AC. Stay warm!".format(temperatures['temp_min'])
         return "It is currently {} degrees F and {}.".format(temperatures['temp'], weather.get_status().lower())
 
     except:
